@@ -1,30 +1,27 @@
 package net.kim123lol.ancientarmaments;
 
-import com.example.examplemod.providers.*;
-import net.kim123lol.ancientarmaments.providers.*;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.util.concurrent.CompletableFuture;
+
 @EventBusSubscriber(modid = AncientArmaments.MOD_ID)
-public final class DataGenerators {
+public class DataGenerators {
+    @SubscribeEvent
+    public static void gatherdata(GatherDataEvent event) {
+        DataGenerator generator = event.getGenerator();
+        PackOutput packOutput = generator.getPackOutput();
+        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-	@SubscribeEvent
-	private static void gatherData(final GatherDataEvent event) {
-		final var generator = event.getGenerator();
-		final var lookupProvider = event.getLookupProvider();
-		final var existingFileHelper = event.getExistingFileHelper();
-		final var packOutput = generator.getPackOutput();
+        generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
 
-		generator.addProvider(event.includeServer(), new BuiltInItemSizes(packOutput, lookupProvider));
-		// The ItemHeatProvider generates extra recipes so we need to hang onto a reference to hand to our recipe provider
-		final var builtInItemHeat = generator.addProvider(event.includeServer(), new BuiltInItemHeat(packOutput, lookupProvider));
-		generator.addProvider(event.includeServer(), new BuiltInRecipes(packOutput, lookupProvider, builtInItemHeat));
-		// The EnhancedAdvancementProvider generates extra language so we need to hang onto a reference to hand to our language provider
-		final var builtInAdvancements = generator.addProvider(event.includeServer(),
-				BuiltInAdvancements.create(packOutput, lookupProvider, existingFileHelper));
 
-		generator.addProvider(event.includeClient(), new BuiltInLanguage(packOutput, builtInAdvancements));
-		generator.addProvider(event.includeClient(), new BuiltInItemModels(packOutput, existingFileHelper));
-	}
+    }
 }

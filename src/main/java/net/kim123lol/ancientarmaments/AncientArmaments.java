@@ -1,69 +1,51 @@
 package net.kim123lol.ancientarmaments;
 
-import net.kim123lol.ancientarmaments.client.*;
-import net.kim123lol.ancientarmaments.client.ExampleModClientEvents;
-import net.kim123lol.ancientarmaments.client.ExampleModClientForgeEvents;
-import net.kim123lol.ancientarmaments.common.item.ExampleModItems;
-import net.kim123lol.ancientarmaments.config.ExampleModConfig;
-import net.kim123lol.ancientarmaments.network.ExampleModPackets;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
+import net.kim123lol.ancientarmaments.common.item.ModCreativeModeTabs;
+import net.kim123lol.ancientarmaments.common.item.ModItems;
 import net.neoforged.bus.api.*;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig.Type;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab.TabVisibility;
-import net.minecraft.world.item.CreativeModeTabs;
-
 @Mod(AncientArmaments.MOD_ID)
-public final class AncientArmaments {
+public class AncientArmaments {
+    public static final String MOD_ID = "ancientarms";
+    public static final Logger LOGGER = LogUtils.getLogger();
 
-	public static final Logger LOG = LogUtils.getLogger();
-	public static final String MOD_ID = "ancientarms";
+    public AncientArmaments(IEventBus modEventBus, ModContainer modContainer) {
+        modEventBus.addListener(this::commonSetup);
 
-	public AncientArmaments(final ModContainer modContainer, final IEventBus modBus, final Dist dist) {
-		modBus.addListener(ExampleModPackets::init);
+        NeoForge.EVENT_BUS.register(this);
 
-		// You likely don't want all of these.
-		modContainer.registerConfig(Type.COMMON, ExampleModConfig.COMMON.spec());
-		modContainer.registerConfig(Type.CLIENT, ExampleModConfig.CLIENT.spec());
-		modContainer.registerConfig(Type.SERVER, ExampleModConfig.SERVER.spec());
-		modContainer.registerConfig(Type.STARTUP, ExampleModConfig.STARTUP.spec());
+        // Register the item to a creative tab
+        modEventBus.addListener(this::addCreative);
 
-		modBus.register(AncientArmaments.class);
-		ExampleModItems.ITEMS.register(modBus);
+        ModCreativeModeTabs.register(modEventBus);
 
-		ExampleModForgeEvents.init(NeoForge.EVENT_BUS);
+        ModItems.register(modEventBus);
 
-		if (dist == Dist.CLIENT) {
-			ExampleModClientEvents.init(modContainer, modBus);
-			ExampleModClientForgeEvents.init(NeoForge.EVENT_BUS);
-		}
-	}
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
 
-	@SubscribeEvent
-	private static void onCreativeTabBuild(final BuildCreativeModeTabContentsEvent event) {
-		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-			event.accept(ExampleModItems.EXAMPLE_ITEM.toStack(), TabVisibility.PARENT_AND_SEARCH_TABS);
-		}
-	}
+    private void commonSetup(FMLCommonSetupEvent event) {
 
-	/**
-	 * Shorthand for {@code ResourceLocation.fromNamespaceAndPath(MOD_ID, path)}
-	 */
-	public static ResourceLocation location(final String path) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-	}
+    }
 
-	/**
-	 * Helper for creating modid prepended lang keys
-	 */
-	public static String lang(final String langKey) {
-		return MOD_ID + "." + langKey;
-	}
+    // Add the example block item to the building blocks tab
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+    }
+
+    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onServerStarting(ServerStartingEvent event) {
+        // Do something when the server starts
+        LOGGER.info("HELLO from server starting");
+    }
 }
