@@ -1,6 +1,7 @@
 package net.kim123lol.ancientarmaments.common.item;
 
 import net.kim123lol.ancientarmaments.AncientArmaments;
+import net.kim123lol.ancientarmaments.common.item.metal.WeaponItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,10 +17,10 @@ public class ModCreativeModeTabs {
 
 
     public static final Supplier<CreativeModeTab> ANCIENT_ARMAMENTS_WEAPON_TAB = CREATIVE_MODE_TAB.register("ancient_armaments_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.DAGGER.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(WeaponItems.DAGGER.get()))
                     .title((Component.translatable("creativetab.ancientarms.dagger_items")))
                     .displayItems((itemDisplayParameters, output) -> {
-                        output.accept(ModItems.DAGGER);
+                        output.accept(WeaponItems.DAGGER);
                     })
 
 
