@@ -3,6 +3,7 @@ package net.kim123lol.ancientarmaments;
 import com.mojang.logging.LogUtils;
 import net.kim123lol.ancientarmaments.common.item.ModCreativeModeTabs;
 import net.kim123lol.ancientarmaments.common.item.ModItems;
+import net.kim123lol.ancientarmaments.common.item.metal.WeaponItems;
 import net.neoforged.bus.api.*;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -25,9 +26,8 @@ public class AncientArmaments {
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
         ModCreativeModeTabs.register(modEventBus);
-
+        WeaponItems.register(modEventBus);
         ModItems.register(modEventBus);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
